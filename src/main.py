@@ -1,5 +1,5 @@
-import binomial
-import matplotlib.pyplot as plt
+import gui
+
 
 def main() -> None:
     """Main function of the program.
@@ -10,20 +10,8 @@ def main() -> None:
     Returns:
         None
     """
-    x = binomial.get_binom_distrobution(1000, 0.5)
-    
-    # Plot the probability density function
-    plt.plot(binomial.get_binom_pdf(x))
-    plt.title('Probability Density Function')
-    plt.xlabel('Number of Successes')
-    plt.ylabel('Probability')
-    plt.show()
-
-
-
-
-
-
+    my_gui = gui.build_gui()
+    my_gui.mainloop()
 
 
 if __name__ == '__main__':

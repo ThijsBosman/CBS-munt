@@ -1,4 +1,10 @@
 import tkinter as tk
+import binomial
+import io
+import matplotlib.pyplot as plt
+import numpy as np
+import math
+from PIL import Image, ImageTk
 
 
 def on_entry_click_builder(entry: tk.Entry = None, default_text: str = None) -> callable:
@@ -43,43 +49,153 @@ def on_focus_out_builder(entry: tk.Entry = None, default_text: str = None) -> ca
     return on_focus_out
 
 
-def calculate():
-    try:
-        value1 = float(entry1.get())
-        value2 = float(entry2.get())
-        result = value1 + value2  # You can change this to any operation you want
-        result_label.config(text="Result: " + str(result))
-    except ValueError:
-        result_label.config(text="Please enter valid numbers")
+def on_click_builder(entry1: tk.Entry = None, entry2: tk.Entry = None, entry3: tk.Entry = None, result_label: tk.Label = None) -> callable:
+    """This function returns a function that will be called when the calculate button is clicked.
+
+    Args:
+        entry1: The number of trials entry.
+        entry2: The number of succes entry.
+        entry3: The probability entry.
+        result_label: The label where the result will be displayed.
+
+    Returns:
+        The function that will be called when the calculate button is clicked.
+    """
+    if entry1 is None or entry2 is None or entry3 is None or result_label is None:
+        raise ValueError(
+            "entry1, entry2, entry3 and result_label must be provided")
+
+    def calculate():
+
+        n_trials = 0
+        n_succes = 0
+        probability = 0
+
+        try:
+            n_trials = int(entry1.get())
+            n_succes = int(entry2.get())
+            probability = float(entry3.get())
+        except ValueError:
+            result_label.config(text="Please enter valid numbers")
+            return
+
+        # Bounds check
+        if n_trials < 0:
+            result_label.config(
+                text="The number of trials must be non-negative.")
+            return
+
+        if n_succes < 0 or n_succes > n_trials:
+            result_label.config(
+                text="The number of succes must be between 0 and the number of trials.")
+            return
+
+        if probability < 0 or probability > 1:
+            result_label.config(
+                text="The probability of success must be between 0 and 1.")
+            return
+
+        # Calculate the binomial distribution
+        distribution = binomial.get_binom_distribution(n_trials, probability)
+
+        lower_rejecting_boundry, upper_rejecting_boundry = binomial.get_rejecting_boundries(
+            distribution)
+        
+        lower_rejecting_boundry = int(math.ceil(lower_rejecting_boundry))
+        upper_rejecting_boundry = int(math.floor(upper_rejecting_boundry))
+        
+        p_values = round(binomial.get_p_value(distribution, n_succes), 4)
+        
+        result_label.config(
+            text=f"Lower boundry: {lower_rejecting_boundry}\nUpper boundry: {upper_rejecting_boundry}\nP-value: {p_values}")
+        
+        return
+
+    return calculate
 
 
-# Create main window
-root = tk.Tk()
-root.title("Kop munt voorbeeld")
+def build_image(x_values: np.ndarray, y_values: np.ndarray) -> ImageTk.PhotoImage:
+    """This function builds an image from the given x and y values.
 
-root.geometry("1000x600")
+    Args:
+        x_values: The x values of the image.
+        y_values: The y values of the image.
 
-# Create entry boxes
-entry1 = tk.Entry(root, fg='grey')
-entry1.grid(row=0, column=0, padx=10, pady=10)
-entry1.insert(0, "Value 1:")
-entry1.bind('<FocusIn>', on_entry_click_builder(entry1, "Value 1:"))
-entry1.bind('<FocusOut>', on_focus_out_builder(entry1, "Value 1:"))
+    Returns:
+        The image.
+    """
+    # Create a new figure
+    fig, ax = plt.subplots()
+
+    # Plot the values
+    ax.plot(x_values, y_values)
+
+    # Convert the plot to a PNG image in memory
+    buffer = io.BytesIO()
+    fig.savefig(buffer, format='png')
+    buffer.seek(0)
+
+    # Open the image from the buffer
+    image = Image.open(buffer)
+
+    # Convert the image to a PhotoImage
+    photo = ImageTk.PhotoImage(image)
+
+    return photo
 
 
-entry2 = tk.Entry(root, fg='grey')
-entry2.grid(row=1, column=0, padx=10, pady=10)
-entry2.insert(0, "Value 2:")
-entry2.bind('<FocusIn>', on_entry_click_builder(entry2, "Value 2:"))
-entry2.bind('<FocusOut>', on_focus_out_builder(entry2, "Value 2:"))
+def build_gui() -> tk.Tk:
+    # Create main window
+    root = tk.Tk()
+    root.title("Kop munt voorbeeld")
 
-# Create calculate button
-calculate_button = tk.Button(root, text="Calculate", command=calculate)
-calculate_button.grid(row=2, column=0, padx=10, pady=10)
+    # Set the size of the window and make it non-resizable
+    root.geometry("1000x600")
+    root.resizable(False, False)
 
-# Create label to display result
-result_label = tk.Label(root, text="")
-result_label.grid(row=3, column=0)
+    # Create number of trials entry
+    n_trials_entry = tk.Entry(root, fg='grey')
+    n_trials_entry.insert(0, "Steekproefgrootte")
+    n_trials_entry.bind('<FocusIn>', on_entry_click_builder(
+        n_trials_entry, "Steekproefgrootte"))
+    n_trials_entry.bind('<FocusOut>', on_focus_out_builder(
+        n_trials_entry, "Steekproefgrootte"))
 
-# Start the GUI
-root.mainloop()
+    # Create number of succes entry
+    n_succes_entry = tk.Entry(root, fg='grey')
+    n_succes_entry.insert(0, "Aantal kop")
+    n_succes_entry.bind('<FocusIn>', on_entry_click_builder(
+        n_succes_entry, "Aantal kop"))
+    n_succes_entry.bind('<FocusOut>', on_focus_out_builder(
+        n_succes_entry, "Aantal kop"))
+
+    # Create probability entry
+    probability_entry = tk.Entry(root, fg='grey')
+    probability_entry.insert(0, "Kans op kop")
+    probability_entry.bind('<FocusIn>', on_entry_click_builder(
+        probability_entry, "Kans op kop"))
+    probability_entry.bind('<FocusOut>', on_focus_out_builder(
+        probability_entry, "Kans op kop"))
+
+    print("DEBUG 1")
+    # Create calculate button
+    result_label = tk.Label(root, text="")
+    calculate_button = tk.Button(root, text="Calculate", command=on_click_builder(
+        n_trials_entry, n_succes_entry, probability_entry, result_label))
+
+    # Create label to display pdf
+    image_label = tk.Label(root)
+
+    # Format the widgets
+    n_trials_entry.grid(row=0, column=0, padx=10, pady=10)
+    n_succes_entry.grid(row=1, column=0, padx=10, pady=10)
+    probability_entry.grid(row=2, column=0, padx=10, pady=10)
+    calculate_button.grid(row=3, column=0, padx=10, pady=10)
+    result_label.grid(row=4, column=0)
+
+    image_label.grid(row=0, column=1, rowspan=3, padx=10, pady=10)
+    return root
+
+
+# frame = build_gui()
+# frame.mainloop()

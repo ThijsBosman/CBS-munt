@@ -1,6 +1,7 @@
 import numpy as np
 from scipy.stats import binom
 from scipy.stats._distn_infrastructure import rv_frozen
+from scipy.stats import binom_test
 
 
 def get_binom_distribution(n: int = 100, p: float = 0.5) -> rv_frozen:
@@ -71,3 +72,22 @@ def get_rejecting_boundries(distribution: rv_frozen = None, alpha: float = 0.05)
         raise ValueError('The significance level must be between 0 and 1.')
 
     return distribution.ppf(alpha / 2), distribution.ppf(1 - alpha / 2)
+
+
+def get_p_value(distribution: rv_frozen = None, n_succes = 0):
+    """This function returns the p-value of a given binomial distribution
+
+    Args:
+        distribution (rv_frozen): binomial distribution
+        n_succes (int): number of successes
+
+    Returns:
+        float: p-value
+    """
+    if distribution is None:
+        raise ValueError('The distribution must be provided.')
+    
+    if n_succes < 0 or n_succes > distribution.args[0]:
+        raise ValueError('The number of succes must be between 0 and the number of trials.')
+
+    return binom_test(n_succes, distribution.args[0], distribution.args[1], alternative='two-sided')
