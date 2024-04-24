@@ -155,7 +155,6 @@ def build_image(x_values: np.ndarray = None, y_values: np.ndarray = None, title:
     fig.set_size_inches(scalar * fig.get_figwidth(),
                         scalar * fig.get_figheight())
 
-    print(fig.get_figwidth() * fig.get_dpi())
     # Convert the plot to a PNG image in memory
     buffer = io.BytesIO()
     fig.savefig(buffer, format='png')
