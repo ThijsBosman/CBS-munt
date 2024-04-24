@@ -74,7 +74,7 @@ def get_rejecting_boundries(distribution: rv_frozen = None, alpha: float = 0.05)
     return distribution.ppf(alpha / 2), distribution.ppf(1 - alpha / 2)
 
 
-def get_p_value(distribution: rv_frozen = None, n_succes = 0):
+def get_p_value(distribution: rv_frozen = None, n_succes=0):
     """This function returns the p-value of a given binomial distribution
 
     Args:
@@ -86,8 +86,9 @@ def get_p_value(distribution: rv_frozen = None, n_succes = 0):
     """
     if distribution is None:
         raise ValueError('The distribution must be provided.')
-    
+
     if n_succes < 0 or n_succes > distribution.args[0]:
-        raise ValueError('The number of succes must be between 0 and the number of trials.')
+        raise ValueError(
+            'The number of succes must be between 0 and the number of trials.')
 
     return binom_test(n_succes, distribution.args[0], distribution.args[1], alternative='two-sided')

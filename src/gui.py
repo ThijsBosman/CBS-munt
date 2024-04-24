@@ -49,7 +49,7 @@ def on_focus_out_builder(entry: tk.Entry = None, default_text: str = None) -> ca
     return on_focus_out
 
 
-def on_click_builder(entry1: tk.Entry = None, entry2: tk.Entry = None, entry3: tk.Entry = None, result_label: tk.Label = None, pdf_image_label = None) -> callable:
+def on_click_builder(entry1: tk.Entry = None, entry2: tk.Entry = None, entry3: tk.Entry = None, result_label: tk.Label = None, pdf_image_label=None) -> callable:
     """This function returns a function that will be called when the calculate button is clicked.
 
     Args:
@@ -100,10 +100,10 @@ def on_click_builder(entry1: tk.Entry = None, entry2: tk.Entry = None, entry3: t
 
         lower_rejecting_boundry, upper_rejecting_boundry = binomial.get_rejecting_boundries(
             distribution)
-        
+
         lower_rejecting_boundry = int(math.ceil(lower_rejecting_boundry))
         upper_rejecting_boundry = int(math.floor(upper_rejecting_boundry))
-        
+
         p_values = round(binomial.get_p_value(distribution, n_succes), 4)
 
         # Get the pdf of the distribution
@@ -116,10 +116,10 @@ def on_click_builder(entry1: tk.Entry = None, entry2: tk.Entry = None, entry3: t
         # # Display the image
         # pdf_image_label.config(image=image)
         # pdf_image_label.image = image
-        
+
         result_label.config(
             text=f"Onderste verwerpings grens: {lower_rejecting_boundry}\nBovenste verwerpings grens: {upper_rejecting_boundry}\nP-waarde: {p_values}")
-        
+
         return
 
     return calculate
@@ -197,12 +197,9 @@ def build_gui() -> tk.Tk:
     # Create label to display pdf
     pdf_image_label = tk.Label(root)
 
-
-
-
     calculate_button = tk.Button(root, text="Calculate", command=on_click_builder(
         n_trials_entry, n_succes_entry, probability_entry, result_label, pdf_image_label))
-    
+
     # Format the widgets
     n_trials_entry.grid(row=0, column=0, padx=10, pady=10)
     n_succes_entry.grid(row=1, column=0, padx=10, pady=10)
