@@ -111,7 +111,7 @@ def on_click_builder(entry1: tk.Entry = None, entry2: tk.Entry = None, entry3: t
 
         # TODO, fix this image
         # Build the image
-        image = build_image(np.arange(len(pdf)), pdf)
+        image = build_image(np.arange(len(pdf)), pdf, "Binomiale verdeling")
 
         # Display the image
         pdf_image_label.config(image=image)
@@ -125,7 +125,7 @@ def on_click_builder(entry1: tk.Entry = None, entry2: tk.Entry = None, entry3: t
     return calculate
 
 
-def build_image(x_values: np.ndarray, y_values: np.ndarray) -> ImageTk.PhotoImage:
+def build_image(x_values: np.ndarray = None, y_values: np.ndarray = None, title: str = None) -> ImageTk.PhotoImage:
     """This function builds an image from the given x and y values.
 
     Args:
@@ -135,15 +135,27 @@ def build_image(x_values: np.ndarray, y_values: np.ndarray) -> ImageTk.PhotoImag
     Returns:
         The image.
     """
+    if x_values is None or y_values is None:
+        raise ValueError("x_values and y_values must be provided")
+
+    if title is None:
+        title = ""
+
     # Create a new figure
     fig, ax = plt.subplots()
+
+    # Set the title
+    ax.set_title(title)
 
     # Plot the values
     ax.plot(x_values, y_values)
 
     # Resize the plot
-    fig.set_size_inches(4, 4)
+    scalar = 280 / (fig.get_figheight() * fig.get_dpi())
+    fig.set_size_inches(scalar * fig.get_figwidth(),
+                        scalar * fig.get_figheight())
 
+    print(fig.get_figwidth() * fig.get_dpi())
     # Convert the plot to a PNG image in memory
     buffer = io.BytesIO()
     fig.savefig(buffer, format='png')
@@ -156,6 +168,25 @@ def build_image(x_values: np.ndarray, y_values: np.ndarray) -> ImageTk.PhotoImag
     photo = ImageTk.PhotoImage(image)
 
     return photo
+
+
+def quit(root: tk.Tk = None) -> callable:
+    """This function quits the program.
+
+
+    Args:
+        root: The root window of the program.
+
+    Returns:
+        The quit function
+    """
+
+    def _quit():
+        root.quit()
+        root.destroy()
+
+    if root is not None:
+        return _quit
 
 
 def build_gui() -> tk.Tk:
@@ -207,6 +238,8 @@ def build_gui() -> tk.Tk:
     calculate_button.grid(row=3, column=0, padx=10, pady=10)
     result_label.grid(row=4, column=0)
 
-    pdf_image_label.place(x=500, y=0)
+    pdf_image_label.place(x=600, y=0)
+
+    root.protocol("WM_DELETE_WINDOW", quit(root))
 
     return root
