@@ -227,7 +227,7 @@ def build_gui() -> tk.Tk:
     # Create label to display pdf
     pdf_image_label = tk.Label(root)
 
-    calculate_button = tk.Button(root, text="Calculate", command=on_click_builder(
+    calculate_button = tk.Button(root, text="Bereken", command=on_click_builder(
         n_trials_entry, n_succes_entry, probability_entry, result_label, pdf_image_label))
 
     # Format the widgets
