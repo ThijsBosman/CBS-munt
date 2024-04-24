@@ -49,7 +49,7 @@ def on_focus_out_builder(entry: tk.Entry = None, default_text: str = None) -> ca
     return on_focus_out
 
 
-def on_click_builder(entry1: tk.Entry = None, entry2: tk.Entry = None, entry3: tk.Entry = None, result_label: tk.Label = None) -> callable:
+def on_click_builder(entry1: tk.Entry = None, entry2: tk.Entry = None, entry3: tk.Entry = None, result_label: tk.Label = None, pdf_image_label = None) -> callable:
     """This function returns a function that will be called when the calculate button is clicked.
 
     Args:
@@ -61,9 +61,9 @@ def on_click_builder(entry1: tk.Entry = None, entry2: tk.Entry = None, entry3: t
     Returns:
         The function that will be called when the calculate button is clicked.
     """
-    if entry1 is None or entry2 is None or entry3 is None or result_label is None:
+    if entry1 is None or entry2 is None or entry3 is None or result_label is None or pdf_image_label is None:
         raise ValueError(
-            "entry1, entry2, entry3 and result_label must be provided")
+            "entry1, entry2, entry3, result_label and pdf_image_label must be provided")
 
     def calculate():
 
@@ -105,9 +105,20 @@ def on_click_builder(entry1: tk.Entry = None, entry2: tk.Entry = None, entry3: t
         upper_rejecting_boundry = int(math.floor(upper_rejecting_boundry))
         
         p_values = round(binomial.get_p_value(distribution, n_succes), 4)
+
+        # Get the pdf of the distribution
+        pdf = binomial.get_binom_pdf(distribution)
+
+        # TODO, fix this image
+        # # Build the image
+        # image = build_image(np.arange(len(pdf)), pdf)
+
+        # # Display the image
+        # pdf_image_label.config(image=image)
+        # pdf_image_label.image = image
         
         result_label.config(
-            text=f"Lower boundry: {lower_rejecting_boundry}\nUpper boundry: {upper_rejecting_boundry}\nP-value: {p_values}")
+            text=f"Onderste verwerpings grens: {lower_rejecting_boundry}\nBovenste verwerpings grens: {upper_rejecting_boundry}\nP-waarde: {p_values}")
         
         return
 
@@ -129,6 +140,9 @@ def build_image(x_values: np.ndarray, y_values: np.ndarray) -> ImageTk.PhotoImag
 
     # Plot the values
     ax.plot(x_values, y_values)
+
+    # Resize the plot
+    fig.set_size_inches(4, 4)
 
     # Convert the plot to a PNG image in memory
     buffer = io.BytesIO()
@@ -177,15 +191,18 @@ def build_gui() -> tk.Tk:
     probability_entry.bind('<FocusOut>', on_focus_out_builder(
         probability_entry, "Kans op kop"))
 
-    print("DEBUG 1")
     # Create calculate button
     result_label = tk.Label(root, text="")
-    calculate_button = tk.Button(root, text="Calculate", command=on_click_builder(
-        n_trials_entry, n_succes_entry, probability_entry, result_label))
 
     # Create label to display pdf
-    image_label = tk.Label(root)
+    pdf_image_label = tk.Label(root)
 
+
+
+
+    calculate_button = tk.Button(root, text="Calculate", command=on_click_builder(
+        n_trials_entry, n_succes_entry, probability_entry, result_label, pdf_image_label))
+    
     # Format the widgets
     n_trials_entry.grid(row=0, column=0, padx=10, pady=10)
     n_succes_entry.grid(row=1, column=0, padx=10, pady=10)
@@ -193,7 +210,8 @@ def build_gui() -> tk.Tk:
     calculate_button.grid(row=3, column=0, padx=10, pady=10)
     result_label.grid(row=4, column=0)
 
-    image_label.grid(row=0, column=1, rowspan=3, padx=10, pady=10)
+    pdf_image_label.grid(row=0, column=1, padx=10, pady=10, sticky='ne')
+
     return root
 
 
