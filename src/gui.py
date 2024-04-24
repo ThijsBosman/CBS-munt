@@ -210,7 +210,3 @@ def build_gui() -> tk.Tk:
     pdf_image_label.place(x=500, y=0)
 
     return root
-
-
-# frame = build_gui()
-# frame.mainloop()
