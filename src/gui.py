@@ -110,12 +110,12 @@ def on_click_builder(entry1: tk.Entry = None, entry2: tk.Entry = None, entry3: t
         pdf = binomial.get_binom_pdf(distribution)
 
         # TODO, fix this image
-        # # Build the image
-        # image = build_image(np.arange(len(pdf)), pdf)
+        # Build the image
+        image = build_image(np.arange(len(pdf)), pdf)
 
-        # # Display the image
-        # pdf_image_label.config(image=image)
-        # pdf_image_label.image = image
+        # Display the image
+        pdf_image_label.config(image=image)
+        pdf_image_label.image = image
 
         result_label.config(
             text=f"Onderste verwerpings grens: {lower_rejecting_boundry}\nBovenste verwerpings grens: {upper_rejecting_boundry}\nP-waarde: {p_values}")
@@ -192,7 +192,7 @@ def build_gui() -> tk.Tk:
         probability_entry, "Kans op kop"))
 
     # Create calculate button
-    result_label = tk.Label(root, text="")
+    result_label = tk.Label(root, text="Please enter valid numbers")
 
     # Create label to display pdf
     pdf_image_label = tk.Label(root)
@@ -207,7 +207,7 @@ def build_gui() -> tk.Tk:
     calculate_button.grid(row=3, column=0, padx=10, pady=10)
     result_label.grid(row=4, column=0)
 
-    pdf_image_label.grid(row=0, column=1, padx=10, pady=10, sticky='ne')
+    pdf_image_label.place(x=500, y=0)
 
     return root
 
