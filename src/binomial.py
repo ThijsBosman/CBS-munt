@@ -62,7 +62,7 @@ def get_rejecting_boundries(distribution: rv_frozen = None, alpha: float = 0.05)
         alpha (float): significance level
 
     Returns:
-        tuple: rejecting boundries
+        tuple: the lower and upper rejecting boundries
     """
     if distribution is None:
         raise ValueError('The distribution must be provided.')
