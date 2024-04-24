@@ -222,7 +222,7 @@ def build_gui() -> tk.Tk:
         probability_entry, "Kans op kop"))
 
     # Create calculate button
-    result_label = tk.Label(root, text="Please enter valid numbers")
+    result_label = tk.Label(root, text="Voer correcte getallen in")
 
     # Create label to display pdf
     pdf_image_label = tk.Label(root)
