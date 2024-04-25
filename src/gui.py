@@ -76,7 +76,7 @@ def on_click_builder(entry1: tk.Entry = None, entry2: tk.Entry = None, entry3: t
             n_succes = int(entry2.get())
             probability = float(entry3.get())
         except ValueError:
-            result_label.config(text="Please enter valid numbers")
+            result_label.config(text="Voer correcte getallen in")
             return
 
         # Bounds check
