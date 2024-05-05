@@ -184,8 +184,10 @@ def quit(root: tk.Tk = None) -> callable:
         root.quit()
         root.destroy()
 
-    if root is not None:
-        return _quit
+    if root is None:
+        raise ValueError("root must be provided")
+
+    return _quit
 
 
 def build_gui() -> tk.Tk:
