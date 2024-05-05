@@ -1,7 +1,7 @@
 import numpy as np
 from scipy.stats import binom
 from scipy.stats._distn_infrastructure import rv_frozen
-from scipy.stats import binom_test
+from scipy.stats import binomtest
 
 
 def get_binom_distribution(n: int = 100, p: float = 0.5) -> rv_frozen:
@@ -91,4 +91,4 @@ def get_p_value(distribution: rv_frozen = None, n_succes=0):
         raise ValueError(
             'The number of succes must be between 0 and the number of trials.')
 
-    return binom_test(n_succes, distribution.args[0], distribution.args[1], alternative='two-sided')
+    return binomtest(n_succes, distribution.args[0], distribution.args[1], alternative='two-sided').pvalue
